@@ -1,0 +1,290 @@
+<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shaikh Multi Services - Document Crop & Print Toolkit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef3f8;color:#172238}header{background:#082d5c;color:#fff;padding:14px 16px;font-size:20px;font-weight:700}.wrap{max-width:1200px;margin:auto;padding:12px}.panel{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 2px 10px #0001}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}button,select,input{padding:9px;border:1px solid #ccd5e0;border-radius:7px;background:#fff}button{background:#0b4b8a;color:#fff;border:0;font-weight:700;cursor:pointer}.red{background:#a52222}.green{background:#187a45}.customer{border:1px solid #d5dde8;border-radius:10px;padding:10px;margin-top:8px}.customer.active{border:2px solid #0b4b8a}.customer input[type=text]{width:100%;margin:7px 0}.docs{display:flex;gap:6px;flex-wrap:wrap}.doc{background:#f2f6fb;color:#172238;border:1px solid #ccd8e5}.small{font-size:12px;color:#5d6878}.editor{display:grid;grid-template-columns:minmax(300px,1fr) 340px;gap:12px}.canvasbox{background:#202832;border-radius:10px;min-height:430px;padding:10px;display:flex;align-items:center;justify-content:center}.canvasbox canvas{max-width:100%;max-height:520px;touch-action:none;background:#111}.side{display:flex;flex-direction:column;gap:8px}.pages{display:flex;gap:14px;flex-wrap:wrap}.pagebox{background:#dfe5eb;padding:12px;border-radius:10px;overflow:auto}.sheet{width:210mm;height:297mm;background:#fff;padding:8mm;display:grid;grid-template-columns:80mm 80mm;grid-template-rows:50mm 50mm 50mm 50mm 50mm;gap:3mm;justify-content:center;align-content:center}.card{width:80mm;height:50mm;border:1px dashed #777;overflow:hidden;background:#fafafa;display:flex;align-items:center;justify-content:center}.card img{width:100%;height:100%;object-fit:contain}.empty{font-size:11px;color:#777;text-align:center}.badge{font-size:11px;background:#e8eef6;padding:4px 6px;border-radius:5px}.cropInfo{padding:8px;background:#f5f8fc;border-radius:7px}
+@media(max-width:850px){.editor{grid-template-columns:1fr}.sheet{transform:scale(.52);transform-origin:top left;margin-right:-48%;margin-bottom:-140mm}}
+@media print{body{background:#fff}header,.top,#customersPanel,#editor{display:none!important}.printPanel{display:block!important;padding:0;margin:0;box-shadow:none}.pagebox{padding:0;background:#fff}.sheet{box-shadow:none;margin:0;page-break-after:always}}
+
+.cropStage canvas{image-rendering:auto;max-width:none;display:block;}
+.zoomInfo{font-weight:800;min-width:70px;text-align:center}
+</style>
+<style id="a4-print-fixed-v13">
+@page { size: 210mm 297mm; margin: 0; }
+@media print {
+  html, body {
+    width: 210mm !important;
+    height: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+  body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  header, .top, #customersPanel, #editor, .no-print, button, input, select, textarea { display:none !important; }
+  .wrap {
+    width: 210mm !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .printPanel {
+    display: block !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+  .printPanel > b { display:none !important; }
+  #pages.pages {
+    display: block !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .pagebox {
+    display: block !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: hidden !important;
+    break-after: page !important;
+    page-break-after: always !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .pagebox:last-child {
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+  .sheet {
+    box-sizing: border-box !important;
+    display: grid !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+    min-height: 297mm !important;
+    max-width: 210mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 8.5mm 25mm !important;
+    grid-template-columns: 80mm 80mm !important;
+    grid-template-rows: repeat(5, 50mm) !important;
+    column-gap: 0 !important;
+    row-gap: 1.5mm !important;
+    justify-content: center !important;
+    align-content: start !important;
+    transform: none !important;
+    overflow: hidden !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .card {
+    box-sizing: border-box !important;
+    width: 80mm !important;
+    height: 50mm !important;
+    min-width: 80mm !important;
+    min-height: 50mm !important;
+    max-width: 80mm !important;
+    max-height: 50mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .card img {
+    display:block !important;
+    width:80mm !important;
+    height:50mm !important;
+    max-width:none !important;
+    max-height:none !important;
+    object-fit:fill !important;
+    image-rendering:auto !important;
+  }
+}
+</style>
+</head><body><header>🪪 Shaikh Multi Services — Document Crop & Print Toolkit</header><div class="wrap">
+<div class="panel top"><div class="row"><button onclick="addCustomer()">➕ Add Customer</button><select id="docType"><option>Aadhaar Front</option><option>Aadhaar Back</option><option>PAN Card</option><option value="Maha ID Front">Maha ID Card Front</option><option value="Maha ID Back">Maha ID Card Back</option><option>Voter ID</option><option>ABHA Card</option><option>Ayushman Card</option><option>E-Shram Card</option><option>Ration Card</option><option>Vehicle RC</option><option>Driving Licence</option><option>Farmer ID</option><option>Other Document</option></select><div id="mahaModeNote" class="hint">Maha ID Front या Maha ID Back select करें → JPG/PNG/WebP या PDF upload करें → उसी selected side पर Auto Crop करें.</div><button onclick="pick()">📂 Upload Image / PDF</button><input id="file" type="file" accept="image/*,.pdf,application/pdf" multiple hidden onchange="filesLoaded(this.files)"><button class="green" onclick="putA4()">➕ Current Crop → A4</button><button onclick="printA4()">🖨️ Print A4 / Save PDF</button><button onclick="saveWork()">💾 Save Work</button><button onclick="loadWork()">📥 Load Work</button><button class="red" onclick="clearAll()">Clear All</button></div><div class="small" style="margin-top:8px">Card: <b>80 × 50 mm</b> • A4 Portrait • 2×5 = 10 cards • Print: <b>A4 • Actual Size / 100%</b>. PDF files are rendered in the browser using PDF.js.</div></div>
+<div class="panel" id="customersPanel"><b>👤 Customer-wise Work</b><div id="customers"></div></div>
+<div class="panel editor" id="editor"><div class="canvasbox"><canvas id="cv" width="1000" height="700"></canvas></div><div class="side"><b>✂️ Crop Editor</b><div id="info" class="small">Document select करें.</div><div class="row"><button onclick="rotate(-90)">↶ Rotate</button><button onclick="rotate(90)">↷ Rotate</button><button onclick="resetCrop()">Reset</button></div><label class="small">Zoom <input id="zoom" type="range" min=".3" max="4" step=".05" value="1" oninput="draw()"></label><div class="row"><button onclick="setZoom(1)">100%</button><button onclick="setZoom(2)">200%</button><button onclick="setZoom(3)">300%</button><button onclick="setZoom(4)">400%</button></div><div class="cropInfo small">Canvas पर finger/mouse से rectangle खींचें। Crop button दबाने पर चुना हुआ हिस्सा नया image बनेगा.</div><button class="green" onclick="cropSelected()">✂️ Crop Selected Area</button><button onclick="autoCrop()">✨ Auto Crop</button><div id="mahaPdfTools" style="display:none;padding:8px;background:#fff8df;border:1px solid #e5c76b;border-radius:8px"><b>🪪 Maha ID — One Page PDF</b><div class="small">एक ही PDF page में Front + Back हों तो PDF एक बार upload करें.</div><div class="row" style="margin-top:6px"><button onclick="mahaSideCrop('front')">✨ Auto Crop Front</button><button onclick="mahaSideCrop('back')">✨ Auto Crop Back</button></div></div><button onclick="putA4()">A4 में डालें</button><button class="red" onclick="deleteDoc()">Delete Document</button></div></div>
+<div class="panel printPanel"><b>📄 A4 Live Preview — 10 Cards / Page</b><div id="pages" class="pages"></div></div></div>
+<script type="module">
+import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+window.pdfjsLib=pdfjsLib; window.appReady=true; if(window.pendingFiles) window.handleFiles(window.pendingFiles);
+</script>
+<script>
+let cs=[],active=-1,di=-1,img=null,sourceCanvas=null,box=null,drag=false,sx=0,sy=0,ang=0,pendingFiles=null;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+function addCustomer(){if(cs.length>=8){alert('एक A4 page पर maximum 8 customer slots हैं.');return}cs.push({name:'Customer '+(cs.length+1),docs:[]});active=cs.length-1;di=-1;img=null;render();draw()}
+function pick(){if(active<0){alert('पहले Customer add करें.');return}document.getElementById('file').click()}
+function filesLoaded(fs){if(!window.appReady){pendingFiles=fs;return}handleFiles(fs)}
+async function handleFiles(fs){for(const f of [...fs]){if(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')) await loadPDF(f); else if(f.type.startsWith('image/')) await loadImageFile(f); else alert('JPG/PNG/WebP या PDF file चुनें.')}}
+function loadImageFile(f){return new Promise(res=>{let r=new FileReader();r.onload=e=>{addDoc(e.target.result);res()};r.readAsDataURL(f)})}
+async function loadPDF(f){try{let buf=await f.arrayBuffer(),pdf=await window.pdfjsLib.getDocument({data:buf}).promise;for(let n=1;n<=pdf.numPages;n++){let page=await pdf.getPage(n),vp=page.getViewport({scale:3});let pc=document.createElement('canvas');pc.width=vp.width;pc.height=vp.height;await page.render({canvasContext:pc.getContext('2d'),viewport:vp}).promise;let chosen=document.getElementById('docType').value;let type=(chosen==='Maha ID Front'||chosen==='Maha ID Back')?chosen:'PDF Page '+n;addDoc(pc.toDataURL('image/png'), type)}}catch(e){alert('PDF open नहीं हो पाया: '+e.message)}}
+function addDoc(src,type){cs[active].docs.push({type:type||document.getElementById('docType').value,src,cards:[]});selectDoc(active,cs[active].docs.length-1);render()}
+function selectDoc(i,j){active=i;di=j;let d=cs[i].docs[j],im=new Image();im.onload=()=>{img=im;ang=0;box=null;document.getElementById('zoom').value=1;document.getElementById('info').textContent=d.type+' • Customer '+(i+1);draw();render()};im.src=d.cropped||d.src}
+function render(){let b=document.getElementById('customers');b.innerHTML='';cs.forEach((q,i)=>{let d=document.createElement('div');d.className='customer '+(i===active?'active':'');let docs=q.docs.map((z,j)=>'<button class="doc" onclick="selectDoc('+i+','+j+')">'+esc(z.type)+' '+(j+1)+'</button>').join('');d.innerHTML='<b>Customer '+(i+1)+'</b><input type="text" value="'+esc(q.name)+'" oninput="cs['+i+'].name=this.value"><div class="docs">'+(docs||'<span class="small">No document</span>')+'</div><div style="margin-top:7px"><span class="badge">Cards: '+q.docs.reduce((n,z)=>n+(z.cards||[]).length,0)+'</span> <button class="red" onclick="delCustomer('+i+')">Delete Customer</button></div>';b.appendChild(d)});pages()}
+function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function draw(){ctx.clearRect(0,0,cv.width,cv.height);if(!img){ctx.fillStyle='#ddd';ctx.font='24px Arial';ctx.textAlign='center';ctx.fillText('Upload / select document',500,350);return}let z=+document.getElementById('zoom').value,s=Math.min(960/img.width,660/img.height)*z,w=img.width*s,h=img.height*s;ctx.save();ctx.translate(500,350);ctx.rotate(ang*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();if(box){ctx.strokeStyle='#00ff70';ctx.lineWidth=4;ctx.strokeRect(box.x,box.y,box.w,box.h)}}
+cv.addEventListener('pointerdown',e=>{if(!img)return;let r=cv.getBoundingClientRect();sx=(e.clientX-r.left)*cv.width/r.width;sy=(e.clientY-r.top)*cv.height/r.height;box={x:sx,y:sy,w:0,h:0};drag=true;cv.setPointerCapture(e.pointerId)});cv.addEventListener('pointermove',e=>{if(!drag)return;let r=cv.getBoundingClientRect(),xx=(e.clientX-r.left)*cv.width/r.width,yy=(e.clientY-r.top)*cv.height/r.height;box.w=xx-sx;box.h=yy-sy;draw()});cv.addEventListener('pointerup',()=>{drag=false;if(box){if(box.w<0){box.x+=box.w;box.w=-box.w}if(box.h<0){box.y+=box.h;box.h=-box.h}}draw()});
+function setZoom(v){document.getElementById("zoom").value=v;draw()}
+
+function cropSelected(){
+ if(!img||!box||box.w<5||box.h<5){alert('पहले crop area select करें.');return}
+ // IMPORTANT: crop from the ORIGINAL image, never from the preview canvas.
+ const W=img.naturalWidth||img.width, H=img.naturalHeight||img.height;
+ const z=+document.getElementById('zoom').value;
+ const base=Math.min(960/img.width,660/img.height)*z;
+ let px=box.x-500, py=box.y-350;
+ const rad=ang*Math.PI/180;
+ // Convert preview coordinates back to image coordinates, including rotation.
+ let ux=px*Math.cos(-rad)-py*Math.sin(-rad);
+ let uy=px*Math.sin(-rad)+py*Math.cos(-rad);
+ const left=(ux+img.width*base/2)/base, top=(uy+img.height*base/2)/base;
+ let bw=box.w/base, bh=box.h/base;
+ let x=Math.max(0,Math.round(left)), y=Math.max(0,Math.round(top));
+ let w=Math.min(W-x,Math.round(bw)), h=Math.min(H-y,Math.round(bh));
+ if(w<2||h<2){alert('Crop area invalid hai.');return}
+ const t=document.createElement('canvas'); t.width=w; t.height=h;
+ const tc=t.getContext('2d'); tc.imageSmoothingEnabled=false;
+ tc.drawImage(img,x,y,w,h,0,0,w,h);
+ cs[active].docs[di].cropped=t.toDataURL('image/png');
+ selectDoc(active,di);
+}
+
+function autoCrop(){
+ if(!img){alert('पहले document upload/select करें.');return}
+ const W=img.naturalWidth||img.width,H=img.naturalHeight||img.height;
+ const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d',{willReadFrequently:true});
+ x.drawImage(img,0,0,W,H);let d=x.getImageData(0,0,W,H).data;
+ // Detect non-background bounds using sampled pixels. Works best for cards on white/light background.
+ const step=Math.max(1,Math.floor(Math.min(W,H)/900));let minX=W,minY=H,maxX=-1,maxY=-1;
+ for(let y=0;y<H;y+=step) for(let xx=0;xx<W;xx+=step){let k=(y*W+xx)*4,r=d[k],g=d[k+1],b=d[k+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+   if(mx<245 || (mx-mn)>18){if(xx<minX)minX=xx;if(xx>maxX)maxX=xx;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+ }
+ if(maxX<0){alert('Auto Crop document detect नहीं कर पाया. Manual crop करें.');return}
+ const pad=Math.max(3,Math.round(Math.min(W,H)*0.008));minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(W-1,maxX+pad);maxY=Math.min(H-1,maxY+pad);
+ const out=document.createElement('canvas');out.width=maxX-minX+1;out.height=maxY-minY+1;const oc=out.getContext('2d');oc.imageSmoothingEnabled=false;oc.drawImage(img,minX,minY,out.width,out.height,0,0,out.width,out.height);
+ cs[active].docs[di].cropped=out.toDataURL('image/png');selectDoc(active,di);
+}
+
+function detectCardRegions(srcImg){
+ const W=srcImg.naturalWidth||srcImg.width,H=srcImg.naturalHeight||srcImg.height;
+ const maxSide=1000, scale=Math.min(1,maxSide/Math.max(W,H));
+ const sw=Math.max(1,Math.round(W*scale)),sh=Math.max(1,Math.round(H*scale));
+ const c=document.createElement('canvas');c.width=sw;c.height=sh;const g=c.getContext('2d',{willReadFrequently:true});
+ g.drawImage(srcImg,0,0,sw,sh);const d=g.getImageData(0,0,sw,sh).data;
+ // Estimate the page/background from border pixels.
+ let br=[0,0,0],n=0; const sx=Math.max(1,Math.floor(sw/40)),sy=Math.max(1,Math.floor(sh/40));
+ for(let x=0;x<sw;x+=sx){for(const y of [0,sh-1]){let k=(y*sw+x)*4;br[0]+=d[k];br[1]+=d[k+1];br[2]+=d[k+2];n++}}
+ for(let y=0;y<sh;y+=sy){for(const x of [0,sw-1]){let k=(y*sw+x)*4;br[0]+=d[k];br[1]+=d[k+1];br[2]+=d[k+2];n++}}
+ br=br.map(v=>v/n);
+ const raw=new Uint8Array(sw*sh);
+ for(let y=0;y<sh;y++) for(let x=0;x<sw;x++){let k=(y*sw+x)*4;let dist=Math.hypot(d[k]-br[0],d[k+1]-br[1],d[k+2]-br[2]);raw[y*sw+x]=dist>24?1:0}
+ // Close gaps so text/photo regions inside a card become one component.
+ let cur=raw, buf=new Uint8Array(sw*sh);
+ for(let pass=0;pass<2;pass++){
+   buf.fill(0);
+   for(let y=1;y<sh-1;y++) for(let x=1;x<sw-1;x++){
+     let on=0; for(let yy=-2;yy<=2;yy++) for(let xx=-2;xx<=2;xx++) if(cur[(y+yy)*sw+(x+xx)]){on++; if(on>=3) break} if(on>=3) break;
+     if(on>=3) buf[y*sw+x]=1;
+   }
+   [cur,buf]=[buf,cur];
+ }
+ const seen=new Uint8Array(sw*sh), comps=[];
+ for(let y=0;y<sh;y++) for(let x=0;x<sw;x++){
+   let idx=y*sw+x; if(!cur[idx]||seen[idx]) continue;
+   let q=[idx],head=0;seen[idx]=1;let minX=x,maxX=x,minY=y,maxY=y,count=0;
+   while(head<q.length){let p=q[head++],px=p%sw,py=(p/sw)|0;count++;if(px<minX)minX=px;if(px>maxX)maxX=px;if(py<minY)minY=py;if(py>maxY)maxY=py;
+     const ns=[p-1,p+1,p-sw,p+sw];for(const z of ns) if(z>=0&&z<sw*sh&&!seen[z]&&cur[z]){seen[z]=1;q.push(z)}
+   }
+   const w=maxX-minX+1,h=maxY-minY+1,area=w*h,ratio=w/h;
+   if(area>sw*sh*.015 && w>sw*.12 && h>sh*.10) comps.push({minX,minY,maxX,maxY,w,h,area,ratio,count});
+ }
+ // Prefer large components whose bounding-box ratio is close to an ID-1 card.
+ const target=1.586;
+ comps.sort((a,b)=>b.area-a.area);
+ let cand=comps.filter(o=>o.ratio>=1.15&&o.ratio<=2.15).sort((a,b)=>{
+   const sa=Math.abs(Math.log(a.ratio/target)), sb=Math.abs(Math.log(b.ratio/target));
+   return (sa*3-a.area/(sw*sh))-(sb*3-b.area/(sw*sh));
+ });
+ if(cand.length<2) cand=comps.slice(0,2);
+ // If the page contains two cards, choose the two strongest spatially distinct candidates.
+ const chosen=[];
+ for(const o of cand){
+   if(!chosen.some(z=>!(o.maxX<z.minX-sw*.03||o.minX>z.maxX+sw*.03||o.maxY<z.minY-sh*.03||o.minY>z.maxY+sh*.03))){chosen.push(o);}
+   if(chosen.length>=2) break;
+ }
+ if(chosen.length<2 && cand.length) chosen.push(cand[0]);
+ chosen.sort((a,b)=>a.minY-b.minY || a.minX-b.minX);
+ return {scale,regions:chosen.map(o=>{
+   const padX=Math.max(3,Math.round(o.w*.025)),padY=Math.max(3,Math.round(o.h*.025));
+   return {x:Math.max(0,o.minX-padX),y:Math.max(0,o.minY-padY),w:Math.min(sw-o.minX+padX,o.w+2*padX),h:Math.min(sh-o.minY+padY,o.h+2*padY)};
+ })};
+}
+function cropRegionToData(srcImg,r,scale){
+ const W=srcImg.naturalWidth||srcImg.width,H=srcImg.naturalHeight||srcImg.height;
+ const sx=r.x/scale,sy=r.y/scale,sw=r.w/scale,sh=r.h/scale;
+ // Force ID-1 aspect ratio without shrinking the detected card; expand the shorter dimension.
+ const target=1.586; let w=sw,h=sh;
+ if(w/h>target) h=w/target; else w=h*target;
+ let cx=sx+sw/2,cy=sy+sh/2; let x=Math.max(0,cx-w/2),y=Math.max(0,cy-h/2);w=Math.min(W-x,w);h=Math.min(H-y,h);
+ const out=document.createElement('canvas');out.width=Math.max(1,Math.round(w));out.height=Math.max(1,Math.round(h));
+ const oc=out.getContext('2d');oc.imageSmoothingEnabled=false;oc.drawImage(srcImg,x,y,w,h,0,0,out.width,out.height);return out.toDataURL('image/png');
+}
+function detectCardCrop(srcImg,preferred){
+ const got=detectCardRegions(srcImg),regs=got.regions;
+ let r=preferred==='back'?regs[1]:regs[0];
+ if(!r && regs[0]) r=regs[0];
+ if(!r) return null;
+ return cropRegionToData(srcImg,r,got.scale);
+}
+function mahaSideCrop(side){
+ if(!img){alert('पहले Maha ID की PDF upload करें.');return}
+ const d=cs[active].docs[di];
+ if(!(d.type==='Maha ID Front'||d.type==='Maha ID Back')){alert('Doc Type में Maha ID Card Front या Back select करें.');return}
+ const temp=new Image(); temp.onload=()=>{
+   const got=detectCardRegions(temp), regs=got.regions;
+   if(regs.length<2){alert('इस 1-page PDF में Front/Back दोनों card साफ़ detect नहीं हुए. Manual Crop करें.');return}
+   d.cropped=cropRegionToData(temp,side==='front'?regs[0]:regs[1],got.scale); d.side=side;
+   selectDoc(active,di); alert((side==='front'?'Front':'Back')+' का proper card-size auto crop तैयार है.');
+ }; temp.src=img.src;
+}
+
+function resetCrop(){box=null;draw()}
+function rotate(a){ang=(ang+a+360)%360;draw()}
+function putA4(){if(active<0||di<0){alert('Document select करें.');return}let d=cs[active].docs[di];if(!d.cards)d.cards=[];d.cards.push(d.cropped||d.src);render()}
+function deleteDoc(){if(active>=0&&di>=0){cs[active].docs.splice(di,1);di=-1;img=null;render();draw()}}
+function delCustomer(i){cs.splice(i,1);active=cs.length?Math.min(i,cs.length-1):-1;di=-1;img=null;render();draw()}
+
+function printA4(){
+  const count=[...document.querySelectorAll('#pages .pagebox')].length;
+  if(!count){alert('पहले कम से कम 1 card A4 में डालें.');return}
+  window.print();
+}
+function pages(){let p=document.getElementById('pages');p.innerHTML='';let all=[];cs.forEach(q=>q.docs.forEach(d=>(d.cards||[]).forEach(src=>all.push({src,name:q.name,type:d.type}))));if(!all.length){p.innerHTML='<div class="small">A4 में अभी कोई card नहीं डाला गया.</div>';return}for(let a=0;a<all.length;a+=10){let pb=document.createElement('div');pb.className='pagebox';let sh=document.createElement('div');sh.className='sheet';for(let i=0;i<10;i++){let cd=document.createElement('div');cd.className='card';let it=all[a+i];if(it){let im=document.createElement('img');im.src=it.src;im.title=it.name+' - '+it.type;cd.appendChild(im)}else cd.innerHTML='<div class="empty">Empty Slot</div>';sh.appendChild(cd)}pb.appendChild(sh);p.appendChild(pb)}}
+function saveWork(){localStorage.setItem('sms_toolkit_v2',JSON.stringify(cs));alert('Work browser में save हो गया.')}
+function loadWork(){let s=localStorage.getItem('sms_toolkit_v2');if(!s){alert('Saved work नहीं मिला.');return}cs=JSON.parse(s);active=cs.length?0:-1;di=-1;img=null;render();draw();alert('Work load हो गया.')}
+function clearAll(){if(confirm('सारा work delete करें?')){cs=[];active=-1;di=-1;img=null;localStorage.removeItem('sms_toolkit_v2');render();draw()}}
+window.addCustomer=addCustomer;window.pick=pick;window.filesLoaded=filesLoaded;window.selectDoc=selectDoc;window.rotate=rotate;window.resetCrop=resetCrop;window.cropSelected=cropSelected;window.autoCrop=autoCrop;window.setZoom=setZoom;window.putA4=putA4;window.deleteDoc=deleteDoc;window.delCustomer=delCustomer;window.saveWork=saveWork;window.loadWork=loadWork;window.clearAll=clearAll;
+addCustomer();draw();
+</script>
+<script>
+(function(){
+ const sel=document.getElementById('docType'); const note=document.getElementById('mahaModeNote');
+ if(!sel) return;
+ function upd(){
+   if(note) note.style.display=(sel.value==='Maha ID Front'||sel.value==='Maha ID Back')?'block':'none'; const mt=document.getElementById('mahaPdfTools'); if(mt) mt.style.display=(sel.value==='Maha ID Front'||sel.value==='Maha ID Back')?'block':'none';
+ }
+ sel.addEventListener('change',upd); upd();
+})();
+</script>
+</body></html>
